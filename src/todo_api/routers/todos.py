@@ -2,7 +2,7 @@
 
 from typing import Annotated, cast
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, Query, Request, status
 
 from todo_api.models import Todo, TodoCreate
 from todo_api.repository import InMemoryTodoRepository
@@ -30,16 +30,26 @@ TodoRepositoryDep = Annotated[
 
 
 @router.get("")
-def list_todos(repository: TodoRepositoryDep) -> list[Todo]:
-    """List every stored Todo in insertion order.
+def list_todos(
+    repository: TodoRepositoryDep,
+    completed: Annotated[bool | None, Query()] = None,
+) -> list[Todo]:
+    """List stored Todos, optionally filtered by completion status.
 
     Args:
         repository: Repository resolved from the current application.
+        completed: When provided, restrict the results to Todos whose
+            `completed` field matches this value. Omitting the parameter
+            returns every stored Todo in insertion order.
 
     Returns:
-        A snapshot of all stored Todos.
+        A snapshot of the stored Todos, filtered by `completed` when given,
+        preserving their original insertion order.
     """
-    return repository.list_all()
+    todos = repository.list_all()
+    if completed is None:
+        return todos
+    return [todo for todo in todos if todo.completed == completed]
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
