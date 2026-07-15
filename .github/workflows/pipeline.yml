@@ -1,0 +1,17 @@
+name: Pipeline
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  placeholder:
+    name: Placeholder (replace with lint, test, build, smoke-test, release)
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Add lint, test, build, smoke-test, and release jobs here."
