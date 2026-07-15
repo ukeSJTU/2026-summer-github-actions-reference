@@ -10,8 +10,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  placeholder:
-    name: Placeholder (replace with lint, test, build, smoke-test, release)
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Add lint, test, build, smoke-test, and release jobs here."
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run ruff check .
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run pytest --cov=todo_api
